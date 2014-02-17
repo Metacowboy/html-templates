@@ -1,0 +1,66 @@
+<!-- 
+     Template for HTML based graphics in CasparCG Server with Berkelium.
+	 Based on the Example from hreinnbeck at https://github.com/hreinnbeck/caspar-templates.
+	 
+	 Contrary to the reccomendations for running Flash based graphics
+	 turning on 'ClearType' will result in better font-aliasing for
+	 HTML based templates.
+	 
+	 
+	 This Template provides a typical text-scroller.
+	 Per default, the scroller is not started after load.
+	 To start it, use ACMP like this
+		call 1-1 play
+	Where the template has been loaded on channel 1 layer 1.
+	To set the text, use:
+		call 1-1 update "Your text here"
+	
+	This scroller can be used in two ways. You can scroll a long running text (which is default and used like explained above) 
+	or you can slide through different pages of text.
+	To use the page wise scrolling, set your pages like this:
+		call 1-1 invoke "setPages(['Page 1 content','Page 2 content', ... ,'Page n content']);"
+	
+	If you want your pages to be shown like in a slide show instead of continuously moving, use:
+		call 1-1 invoke "setAnimation('RightInLeftOut');"
+		call 1-1 invoke "setAnimation('LeftInLeftOut');"
+		call 1-1 invoke "setAnimation('RightInRightOut');"
+		call 1-1 invoke "setAnimation('LeftInRightOut');"
+		call 1-1 invoke "setAnimation('BottomInTopOut');"
+		call 1-1 invoke "setAnimation('BottomInBottomOut');"
+		call 1-1 invoke "setAnimation('TopInTopOut');"
+		call 1-1 invoke "setAnimation('TopInBottomOut');"
+		call 1-1 invoke "setAnimation('ScrollLeft');"
+	
+	You can pause the scroll by
+		call 1-1 invoke "pause();"
+	which will stop the movement immediately.
+	
+	To stop the scroll, use 
+		call 1-1 stop
+	which will stop the scroll and clears of the screen.
+	
+	If you want to stop the scroll after the end of the current iteration, call
+		call 1-1 next
+	This will end the whole scrolltext if in scrollmode or end after the current page in page mode.
+	
+	Have fun!
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>HTML-Scroll for CasparCG by Sublan.tv</title>		
+		<link rel="stylesheet" type="text/css" href="css/scroller.css">
+		<script type="text/javascript" src="js/scroller.js" />
+    </head>
+    <body>
+		<span id="ruler"></span>
+		<div id="content">	
+			<p id="rulerObj"></p>
+			<div class='scroller'>
+				<p id="p1"></p>
+				<p id="p2"></p>
+			</div>
+		</div>	
+    </body>
+</html>

@@ -1,0 +1,112 @@
+/*
+	This is the CSS for the scroll template by sublan.tv
+*/
+
+* {
+	-webkit-box-sizing: border-box;
+	Box-Sizing:border-box;							/* This sets all elements to be the actual set dimensions, disregarding padding and borders */
+	-webkit-backface-visibility: hidden;			/* Hide the backface of elements - usuefull for 3d effects */
+	-webkit-transition: translate3d(0,0,0);			/* Turns on hardware acceleration - not known to be of benefit in CCG, but won't hurt */
+}
+
+HTML, BODY {
+	Margin:0;										 /* Use all available space */
+	Padding:0;										 /* Use all available space */
+	Background:transparent;							 /* The HTML consumer actually makes your background transparent by default, unless a color or image is specified - but this might be usefull when debugging in browsers */
+	Overflow:hidden;								 /* Hide any overflowing elements - to disable scollbars */
+	-webkit-font-smoothing:antialiased !important;	 /* Set aliasing of fonts - possible options: none, antialiased,  subpixel-antialiased */
+}
+
+BODY {
+	Font-Family: Calibri,Arial;
+			Color: #FFF;
+}
+
+#ruler { 
+	visibility: hidden;
+	white-space: nowrap;
+	Font-Size:40px;
+	Margin: 0;
+	Text-Align: center;
+	Text-Shadow: 1px 1px 0px #000000;
+}
+#rulerObj {
+	white-space: nowrap;
+	Font-Size:40px;
+	Margin: 0;
+	Text-Align: center;
+	Text-Shadow: 1px 1px 0px #000000;
+}
+
+.scroller {
+	Width: 100%;
+	Height: 50px;
+	Overflow: hidden;
+	Position: absolute;
+	Top: 80%;
+}
+.scroller p {
+	Font-Size:40px;
+	Position: absolute;
+	Width: 100%;
+	Height: 100%;
+	Margin: 0;
+	Text-Align: left;
+	Text-Shadow: 1px 1px 0px #000000;
+	-webkit-transform:translateX(100%);
+}
+.scroller p:nth-child(1) {
+	-webkit-animation: ScrollLeft 10s linear infinite;
+}
+.scroller p:nth-child(2) {
+	-webkit-animation: ScrollLeft 10s 5s linear infinite;
+}
+
+
+/* ANIMATIONS */
+@-webkit-keyframes ScrollLeft {
+	0% {
+		-webkit-transform:translateX(100%);
+	}
+	50% {
+		-webkit-transform:translateX(0%);
+	}
+	100%{
+		-webkit-transform:translateX(-100%);
+	}
+}
+
+@-webkit-keyframes RigthInLeftOut {
+	0% {
+		-webkit-transform:translateX(100%);
+	}
+	10% {
+		-webkit-transform:translateX(0);
+	}
+	40% {
+		-webkit-transform:translateX(0);
+	}
+	50% {
+		-webkit-transform:translateX(-100%);
+	}
+	100%{
+		-webkit-transform:translateX(-100%);
+	}
+}
+@-webkit-keyframes RightInRightOut {
+	0% {
+		-webkit-transform:translateX(100%);
+	}
+	10% {
+		-webkit-transform:translateX(0);
+	}
+	40% {
+		-webkit-transform:translateX(0);
+	}
+	50% {
+		-webkit-transform:translateX(100%);
+	}
+	100%{
+		-webkit-transform:translateX(100%);
+	}
+}
