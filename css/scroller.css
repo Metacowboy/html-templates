@@ -56,6 +56,7 @@ BODY {
 	Width: 100%;
 	Height: 100%;
 	Margin: 0;
+	white-space: pre;
 	Text-Shadow: 1px 1px 0px #000000;
 	-webkit-transform:translateX(100%);
 }

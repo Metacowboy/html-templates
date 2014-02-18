@@ -1,6 +1,6 @@
 
 /* global vars */
-var scrollerText = new Array('Das ist ein Test ','für den HTML5 Scroller.');
+var scrollerText = new Array('');
 var scrollerIndex = 0;
 var active=false;
 var duration = 10;
@@ -8,7 +8,7 @@ var animation = 'ScrollLeft';
 var animations = 'ScrollLeft RightInRightOut RightInLeftOut';
 
 var testText = 'Das ist ein neuer, längerer und viel besserer Test-Text für den Scroller. Er enthält sogar <html>-Tags wie <b>FETT</b> und viele Umlaute äöüß ohne dabei Probleme zu machen. Super, oder?';
-var testPages = new Array('Page 1:', 'Page 2:', 'Page 3:', 'Page 4: ', 'Page 5:');
+var testPages = new Array('1: CasparCG 2.0.7Beta has a', '2: brand new HTML Producer!', '3: This is so amazing!', '4: And guess what?', '5: This is a scroll template','6: Have fun using it!','7: By sublan.tv');
 
 /* EVENT HANDLER */
 function setNextPageText(obj) {
@@ -32,9 +32,6 @@ function scrollStopped() {
 
 	// reset animation
 	event.target.style.webkitAnimationPlayState='paused';
-	//event.target.style.visibility='hidden';
-	//event.target.style.webkitAnimationName='';
-	//event.target.style.webkitAnimationIterationCount=0;
 	event.target.style.webkitAnimationDelay=0; // the delay is only needed at the first start of an animation!
 	if (active) {
 		// play again
@@ -94,7 +91,7 @@ function setObjectAnimation(anim, obj) {
 function setAnimation(anim) {
 	//document.getElementById('log').innerHTML='setAnimation()';
 	animation=anim;
-	if (activ) {
+	if (active) {
 		stop();
 		play();
 	}
