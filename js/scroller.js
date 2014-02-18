@@ -14,6 +14,7 @@ var active = false;
 var duration = 10; // keep this value even (duration mod 2 = 0)
 var animation = 'ScrollLeft';
 var animations = 'ScrollLeft RightInRightOut RightInLeftOut';
+var isScroll = /^Scroll/;
 
 var testText = 'CasparCG 2.0.7Beta has a brand new HTML Producer! This is so amazing! And guess what? This is a scroll template for you. Have fun using it! By sublan.tv';
 var testPages = ['1: CasparCG 2.0.7Beta has a', '2: brand new HTML Producer!', '3: This is so amazing!', '4: And guess what?', '5: This is a scroll template for you.','6: Have fun using it!','7: By sublan.tv'];
@@ -31,7 +32,12 @@ function scrollStopped() {
 	if (active) {
 		// play again
 		playAnimation(event.target);
-	} 
+	} else if (isScroll.test(animation)) {
+		// It's a scroller, we need to end the whole text
+		if (scrollerIndex < scrollerText.length) {
+			playAnimation(event.target);
+		}
+	}
 }
 
 /* 
@@ -54,7 +60,6 @@ function setNextPageText(obj) {
 		rulerObj.style.letterSpacing = 'normal';
 		rulerObj.style.wordSpacing = 'normal';
 		
-		var isScroll = /^Scroll/;
 		if ( isScroll.test(animation) && scrollerIndex != scrollerText.length-1) { 
 			var diff = window.innerWidth - rulerObj.offsetWidth;
 			
@@ -219,7 +224,6 @@ function stop() {
 
 function next() {
 	// Will stop after finishing the active animation
-	// ToDo: Change so that a scroll is ended correct
 	active=false;
 }
 
