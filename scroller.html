@@ -7,11 +7,12 @@
 	 HTML based templates.
 	 
 	 
-	 This Template provides a typical text-scroller.
-	 Per default, the scroller is not started after load.
-	 To start it, use ACMP like this
+	This Template provides a typical text-scroller.
+	Per default, the scroll is not started after load.
+	To start it, use ACMP like this
 		call 1-1 play
 	Where the template has been loaded on channel 1 layer 1.
+	
 	To set the text, use:
 		call 1-1 update "Your text here"
 	
@@ -29,10 +30,13 @@
 		call 1-1 invoke "setAnimation('BottomInBottomOut');"
 		call 1-1 invoke "setAnimation('TopInTopOut');"
 		call 1-1 invoke "setAnimation('TopInBottomOut');"
-		call 1-1 invoke "setAnimation('ScrollLeft');"
 	
-	You can pause the scroll by
-		call 1-1 invoke "pause();"
+	To set the typical scroll use:
+		call 1-1 invoke "setAnimation('ScrollLeft');"
+		call 1-1 invoke "setAnimation('ScrollRight');"
+	
+	You can pause/unpause the scroll by
+		call 1-1 invoke "togglePause();"
 	which will stop the movement immediately.
 	
 	To stop the scroll, use 
@@ -42,6 +46,11 @@
 	If you want to stop the scroll after the end of the current iteration, call
 		call 1-1 next
 	This will end the whole scrolltext if in scrollmode or end after the current page in page mode.
+	
+	There are two test functions for you
+		call 1-1 invoke "testScroll();"
+		call 1-1 invoke "testPage();"
+	with predefined animation and Text to show how it works.
 	
 	Have fun!
 -->

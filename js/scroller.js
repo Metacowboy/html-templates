@@ -12,18 +12,55 @@ var testPages = ['1: CasparCG 2.0.7Beta has a', '2: brand new HTML Producer!', '
 
 /* EVENT HANDLER */
 function setNextPageText(obj) {
-	//document.getElementById('log').innerHTML='setNextPageText()';
 
 	if (scrollerText.length > 0) {
 		if (scrollerIndex > scrollerText.length-1) {
 			scrollerIndex = 0;
 		}
-		// replace leading spaces with margin to keep the layout correct
-		// TODO: Change for left/right scrolling!
-		//p=0;
-		//while(p < scrollerText[scrollerIndex].length && scrollerText[scrollerIndex].substring(p,1) == ' ') {p++;}
-		//obj.style.marginLeft = (10*p) + 'px';
-		obj.innerHTML=scrollerText[scrollerIndex++];
+		var rulerObj = document.getElementById('ruler');		
+		rulerObj.innerHTML=scrollerText[scrollerIndex];
+		obj.innerHTML=scrollerText[scrollerIndex];
+		
+		// Adjust spacing to make sure the text fills the whole page. Not for the last page and only with Scroll* Animations
+		obj.style.letterSpacing = 'normal';
+		obj.style.wordSpacing = 'normal';
+		rulerObj.style.letterSpacing = 'normal';
+		rulerObj.style.wordSpacing = 'normal';
+		
+		var isScroll = /^Scroll/;
+		if ( isScroll.test(animation) && scrollerIndex != scrollerText.length-1) { 
+			var diff = window.innerWidth - rulerObj.offsetWidth;
+			
+			// if there are more chars than missing pixels, we can use letter-spacing
+			if (diff > scrollerText[scrollerIndex].length-1) {
+				rulerObj.style.letterSpacing=Math.ceil(diff/(scrollerText[scrollerIndex]-1)) + 'px';
+				obj.style.letterSpacing=Math.ceil(diff/(scrollerText[scrollerIndex]-1)) + 'px';
+				diff = window.innerWidth - rulerObj.offsetWidth;
+			
+			}
+			// for the rest, we try word-spacing
+			var spacing = 0;
+			while( rulerObj.offsetWidth < window.innerWidth) {
+				spacing++;
+				rulerObj.style.wordSpacing = spacing + 'px';
+			}
+			
+			// we will use the amount of wordspacing with the smaller error
+			var diffOver = Math.abs(window.innerWidth - rulerObj.offsetWidth);
+			rulerObj.style.wordSpacing = (spacing - 1) + 'px';
+			if (diffOver > (window.innerWidth - rulerObj.offsetWidth)) {
+				spacing--;
+			}
+			if (spacing > 0) {
+				obj.style.wordSpacing = spacing + 'px';
+				rulerObj.style.wordSpacing = spacing + 'px';
+				diff = window.innerWidth - rulerObj.offsetWidth;
+			} else {
+				obj.style.wordSpacing = 'normal';
+				rulerObj.style.wordSpacing = 'normal';
+			}
+		}
+		scrollerIndex++;
 	}
 }
 	
@@ -49,24 +86,27 @@ function setPages(pages) {
 
 function setScrollText(text) {
 	//document.getElementById('log').innerHTML='setScrollText('+ text.length +')<br>'+text;
-
 	var start = 0;
 	var end = 0;
 	var	page = 0;
+	var lastWidth = 0;
 	var newPages = [];
 	var rulerObj = document.getElementById('ruler');
 
 	while(end < text.length) {
 		rulerObj.innerHTML = escapeHtml(text.substring(start,end));
-		while(rulerObj.offsetWidth <= window.innerWidth +10 && end < text.length) {
+		lastWidth = rulerObj.offsetWidth;
+		while( lastWidth < window.innerWidth && end < text.length) {
 			rulerObj.innerHTML = escapeHtml(text.substring(start,++end));
+			lastWidth = rulerObj.offsetWidth;
 		}
+		
+		// if we're not at the end, we need to take the one that fits
 		if (end < text.length) {
-			newPages[page++] = escapeHtml(text.substring(start,--end));
-			start=end;
-		} else {
-			newPages[page++] = escapeHtml(text.substring(start,end));
+			end--;
 		}
+		newPages[page++] = escapeHtml(text.substring(start,end));
+		start=end;
 	}
 
 	if (page > 0) {	
@@ -82,15 +122,15 @@ function setObjectAnimation(anim, obj) {
 	obj.style.webkitAnimationName=anim;
 	switch (anim) {
 		case 'ScrollLeft':
-			document.getElementById('scroller').style.textAlign='left';
+			obj.style.textAlign='left';
 			obj.style.webkitAnimationTimingFunction='linear';
 			break;
 		case 'ScrollRight':
-			document.getElementById('scroller').style.textAlign='right';
+			obj.style.textAlign='right';
 			obj.style.webkitAnimationTimingFunction='linear';
 			break;
 		default:
-			document.getElementById('scroller').style.textAlign='center';
+			obj.style.textAlign='center';
 			obj.style.webkitAnimationTimingFunction='ease';
 	}
 }
@@ -160,11 +200,13 @@ function stop() {
 }
 
 function next() {
+	// Will stop after finishing the active animation
+	// ToDo: Change so that a scroll is ended correct
 	active=false;
 }
 
 function update(str) {
-	document.getElementById('log').innerHTML='update()';
+	//document.getElementById('log').innerHTML='update()';
 	setScrollText(str);
 }
 
@@ -177,13 +219,16 @@ Util
 ====
 */
 function testScroll() {
+	stop();
 	setScrollText(testText);
+	setAnimation('ScrollLeft');
 	play();
 }
 
 function testPage() {
+	stop();
 	setPages(testPages);
-	setAnimation('LeftInRightOut');
+	setAnimation('TopInBottomOut');
 	play();
 }
 
