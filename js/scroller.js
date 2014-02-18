@@ -100,6 +100,7 @@ function setPages(pages) {
 	//document.getElementById('log').innerHTML='setPages()';
 	if (pages !== null) {
 		scrollerText = pages;
+		scollerIndex = 0;
 	}
 } 
 
