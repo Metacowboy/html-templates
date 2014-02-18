@@ -1,14 +1,14 @@
 
 /* global vars */
-var scrollerText = new Array('');
+var scrollerText = [''];
 var scrollerIndex = 0;
-var active=false;
+var active = false;
 var duration = 10;
 var animation = 'ScrollLeft';
 var animations = 'ScrollLeft RightInRightOut RightInLeftOut';
 
-var testText = 'Das ist ein neuer, längerer und viel besserer Test-Text für den Scroller. Er enthält sogar <html>-Tags wie <b>FETT</b> und viele Umlaute äöüß ohne dabei Probleme zu machen. Super, oder?';
-var testPages = new Array('1: CasparCG 2.0.7Beta has a', '2: brand new HTML Producer!', '3: This is so amazing!', '4: And guess what?', '5: This is a scroll template','6: Have fun using it!','7: By sublan.tv');
+var testText = 'CasparCG 2.0.7Beta has a brand new HTML Producer! This is so amazing! And guess what? This is a scroll template for you. Have fun using it! By sublan.tv';
+var testPages = ['1: CasparCG 2.0.7Beta has a', '2: brand new HTML Producer!', '3: This is so amazing!', '4: And guess what?', '5: This is a scroll template for you.','6: Have fun using it!','7: By sublan.tv'];
 
 /* EVENT HANDLER */
 function setNextPageText(obj) {
@@ -48,27 +48,34 @@ function setPages(pages) {
 } 
 
 function setScrollText(text) {
-	document.getElementById('log').innerHTML='setScrollText()';
+	//document.getElementById('log').innerHTML='setScrollText('+ text.length +')<br>'+text;
 
-	s=0; e=0; p=0;
-	newPages = [];
-	rulerObj = document.getElementById('ruler');
-	while(e < text.length) {
-		rulerObj.innerHTML = escapeHtml(text.substr(s,e));
-		while(rulerObj.offsetWidth < window.innerWidth && e < text.length) {
-			rulerObj.innerHTML = escapeHtml(text.substr(s,++e));
+	var start = 0;
+	var end = 0;
+	var	page = 0;
+	var newPages = [];
+	var rulerObj = document.getElementById('ruler');
+
+	while(end < text.length) {
+		rulerObj.innerHTML = escapeHtml(text.substring(start,end));
+		while(rulerObj.offsetWidth <= window.innerWidth +10 && end < text.length) {
+			rulerObj.innerHTML = escapeHtml(text.substring(start,++end));
 		}
-		document.getElementById('log').innerHTML='setScrollText(): New page (' + p+1 +')';
-		newPages[p++] = escapeHtml(text.substr(s,e-1));
-		document.getElementById('log').innerHTML='setScrollText(): New page (' + p +'): ' + escapeHtml(text.substr(s,e-1));
-		s=e-1;
+		if (end < text.length) {
+			newPages[page++] = escapeHtml(text.substring(start,--end));
+			start=end;
+		} else {
+			newPages[page++] = escapeHtml(text.substring(start,end));
+		}
 	}
-	if (p === 0) {
-		scrollerText = new Array('');
-	} else {				
+
+	if (page > 0) {	
 		scrollerText = newPages;
+	} else {
+		scrollerText = [''];
 	}
 	scrollerIndex = 0;
+	
 }
 
 function setObjectAnimation(anim, obj) {
