@@ -58,11 +58,6 @@ BODY {
 	Margin: 0;
 	Text-Shadow: 1px 1px 0px #000000;
 	-webkit-transform:translateX(100%);
-	-webkit-animation-duration: 10s;
-}
-
-#p2 {
-	-webkit-animation-delay: 5s;
 }
 
 /* ANIMATIONS */

@@ -3,13 +3,16 @@
 var scrollerText = new Array('Das ist ein Test ','für den HTML5 Scroller.');
 var scrollerIndex = 0;
 var active=false;
-var duration = 10
+var duration = 10;
 var animation = 'ScrollLeft';
 var animations = 'ScrollLeft RightInRightOut RightInLeftOut';
 
+var testText = 'Das ist ein neuer, längerer und viel besserer Test-Text für den Scroller. Er enthält sogar <html>-Tags wie <b>FETT</b> und viele Umlaute äöüß ohne dabei Probleme zu machen. Super, oder?';
+var testPages = new Array('Page 1:', 'Page 2:', 'Page 3:', 'Page 4: ', 'Page 5:');
+
 /* EVENT HANDLER */
 function setNextPageText(obj) {
-	document.getElementById('log').innerHTML='setNextPageText()';
+	//document.getElementById('log').innerHTML='setNextPageText()';
 
 	if (scrollerText.length > 0) {
 		if (scrollerIndex > scrollerText.length-1) {
@@ -17,21 +20,21 @@ function setNextPageText(obj) {
 		}
 		// replace leading spaces with margin to keep the layout correct
 		// TODO: Change for left/right scrolling!
-		p=0;
-		while(p < scrollerText[scrollerIndex].length && scrollerText[scrollerIndex].substring(p,1) == ' ') {p++;}
-		obj.style.marginLeft = (10*p) + 'px';
-		obj.innerHTML=unescape(scrollerText[scrollerIndex++]);
+		//p=0;
+		//while(p < scrollerText[scrollerIndex].length && scrollerText[scrollerIndex].substring(p,1) == ' ') {p++;}
+		//obj.style.marginLeft = (10*p) + 'px';
+		obj.innerHTML=scrollerText[scrollerIndex++];
 	}
 }
 	
 function scrollStopped() {
-	document.getElementById('log').innerHTML='scrollStopped()';
+	//document.getElementById('log').innerHTML='scrollStopped()';
 
 	// reset animation
 	event.target.style.webkitAnimationPlayState='paused';
-	event.target.style.visibility='hidden';
-	event.target.style.webkitAnimationName='';
-	event.target.style.webkitAnimationIterationCount=0;
+	//event.target.style.visibility='hidden';
+	//event.target.style.webkitAnimationName='';
+	//event.target.style.webkitAnimationIterationCount=0;
 	event.target.style.webkitAnimationDelay=0; // the delay is only needed at the first start of an animation!
 	if (active) {
 		// play again
@@ -41,8 +44,10 @@ function scrollStopped() {
 
 /* SETTER */
 function setPages(pages) {
-	document.getElementById('log').innerHTML='setPages()';
-	scrollerText = pages;
+	//document.getElementById('log').innerHTML='setPages()';
+	if (pages !== null) {
+		scrollerText = pages;
+	}
 } 
 
 function setScrollText(text) {
@@ -56,7 +61,9 @@ function setScrollText(text) {
 		while(rulerObj.offsetWidth < window.innerWidth && e < text.length) {
 			rulerObj.innerHTML = escapeHtml(text.substr(s,++e));
 		}
+		document.getElementById('log').innerHTML='setScrollText(): New page (' + p+1 +')';
 		newPages[p++] = escapeHtml(text.substr(s,e-1));
+		document.getElementById('log').innerHTML='setScrollText(): New page (' + p +'): ' + escapeHtml(text.substr(s,e-1));
 		s=e-1;
 	}
 	if (p === 0) {
@@ -85,7 +92,7 @@ function setObjectAnimation(anim, obj) {
 }
 
 function setAnimation(anim) {
-	document.getElementById('log').innerHTML='setAnimation()';
+	//document.getElementById('log').innerHTML='setAnimation()';
 	animation=anim;
 	if (activ) {
 		stop();
@@ -94,28 +101,32 @@ function setAnimation(anim) {
 }
 
 function playAnimation(obj) {
-	document.getElementById('log').innerHTML='playObjectAnimation()';
-	
-	// This line is just to make sure the animation really starts if it has been played.
-	obj.offsetWidth = obj.offsetWidth;
+	//document.getElementById('log').innerHTML='playObjectAnimation()';
+	obj.offsetWidth = document.getElementById('p1').offsetWidth;
 	setNextPageText(obj);
 	obj.addEventListener('webkitAnimationEnd',scrollStopped,false);
 	obj.style.webkitAnimationIterationCount=1;
-	obj.style.visibility='visible';
 	setObjectAnimation(animation,obj);
 	obj.style.webkitAnimationPlayState='running';
+	obj.style.visibility='visible';
 }
 
-/* CasparCG standard functions */
+/* 
+CasparCG standard functions 
+===========================
+*/
 function play() {
-	document.getElementById('log').innerHTML='play()';
+	//document.getElementById('log').innerHTML='play()';
 	stop();
 	active=true;
-	setNextPageText(document.getElementById('p1'));
-	setNextPageText(document.getElementById('p2'));
+	
+	// This line is just to make sure the animation really starts if it has been played by changing the object
+	document.getElementById('p1').offsetWidth = document.getElementById('p1').offsetWidth;
+	document.getElementById('p2').offsetWidth = document.getElementById('p2').offsetWidth;
+	
 	// Reset duration and delay of second page
-	document.getElementById('p1').style.webkitAnimationDuration=duration;
-	document.getElementById('p2').style.webkitAnimationDuration=duration;
+	document.getElementById('p1').style.webkitAnimationDuration=duration+'s';
+	document.getElementById('p2').style.webkitAnimationDuration=duration+'s';
 	document.getElementById('p2').style.webkitAnimationDelay=duration/2 + 's';
 	playAnimation(document.getElementById('p1'));
 	playAnimation(document.getElementById('p2'));
@@ -133,6 +144,7 @@ function togglePause() {
 
 function stop() {
 	active=false;
+	// reset animation
 	document.getElementById('p1').style.webkitAnimationIterationCount=0;
 	document.getElementById('p1').webkitAnimationPlayState='paused';
 	document.getElementById('p1').style.visibility='hidden';
@@ -145,14 +157,10 @@ function stop() {
 
 function next() {
 	active=false;
-	/* 
-    document.getElementById('log').innerHTML='Next. Set IterationCount: ' + animationIteration['p1'];
-	document.getElementById('p1').style.webkitAnimationIterationCount=animationIteration['p1']+1;
-	document.getElementById('p2').style.webkitAnimationIterationCount=animationIteration['p2']+1;
-	*/
 }
 
 function update(str) {
+	document.getElementById('log').innerHTML='update()';
 	setScrollText(str);
 }
 
@@ -160,7 +168,21 @@ function invoke(str) {
 	eval(str);
 }
 
-/* Util */
+/* 
+Util 
+====
+*/
+function testScroll() {
+	setScrollText(testText);
+	play();
+}
+
+function testPage() {
+	setPages(testPages);
+	setAnimation('LeftInRightOut');
+	play();
+}
+
 function escapeHtml(unsafe) {
 	return unsafe.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
