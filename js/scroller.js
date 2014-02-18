@@ -1,16 +1,43 @@
+/*
+This is the js code base for the scroll template by sublan.tv.
+For a usage discription see the scroller.html
+
+In this file, you can only change the animation duration. 
+This musst be a even number and is in seconds.
+*/
+
 
 /* global vars */
 var scrollerText = [''];
 var scrollerIndex = 0;
 var active = false;
-var duration = 10;
+var duration = 10; // keep this value even (duration mod 2 = 0)
 var animation = 'ScrollLeft';
 var animations = 'ScrollLeft RightInRightOut RightInLeftOut';
 
 var testText = 'CasparCG 2.0.7Beta has a brand new HTML Producer! This is so amazing! And guess what? This is a scroll template for you. Have fun using it! By sublan.tv';
 var testPages = ['1: CasparCG 2.0.7Beta has a', '2: brand new HTML Producer!', '3: This is so amazing!', '4: And guess what?', '5: This is a scroll template for you.','6: Have fun using it!','7: By sublan.tv'];
 
-/* EVENT HANDLER */
+/* 
+EVENT HANDLER 
+=============
+*/
+function scrollStopped() {
+	//document.getElementById('log').innerHTML='scrollStopped()';
+
+	// reset animation
+	event.target.style.webkitAnimationPlayState='paused';
+	event.target.style.webkitAnimationDelay=0; // the delay is only needed at the first start of an animation!
+	if (active) {
+		// play again
+		playAnimation(event.target);
+	} 
+}
+
+/* 
+SETTER 
+======
+*/
 function setNextPageText(obj) {
 
 	if (scrollerText.length > 0) {
@@ -63,20 +90,7 @@ function setNextPageText(obj) {
 		scrollerIndex++;
 	}
 }
-	
-function scrollStopped() {
-	//document.getElementById('log').innerHTML='scrollStopped()';
 
-	// reset animation
-	event.target.style.webkitAnimationPlayState='paused';
-	event.target.style.webkitAnimationDelay=0; // the delay is only needed at the first start of an animation!
-	if (active) {
-		// play again
-		playAnimation(event.target);
-	} 
-}
-
-/* SETTER */
 function setPages(pages) {
 	//document.getElementById('log').innerHTML='setPages()';
 	if (pages !== null) {
@@ -144,6 +158,10 @@ function setAnimation(anim) {
 	}
 }
 
+/*
+Actions
+=======
+*/
 function playAnimation(obj) {
 	//document.getElementById('log').innerHTML='playObjectAnimation()';
 	obj.offsetWidth = document.getElementById('p1').offsetWidth;
@@ -153,6 +171,16 @@ function playAnimation(obj) {
 	setObjectAnimation(animation,obj);
 	obj.style.webkitAnimationPlayState='running';
 	obj.style.visibility='visible';
+}
+
+function togglePause() {
+	if (document.getElementById('p1').style.webkitAnimationPlayState=='paused') {
+		document.getElementById('p1').style.webkitAnimationPlayState='running';
+		document.getElementById('p2').style.webkitAnimationPlayState='running';
+	} else {
+		document.getElementById('p1').style.webkitAnimationPlayState='paused';
+		document.getElementById('p2').style.webkitAnimationPlayState='paused';	
+	}
 }
 
 /* 
@@ -174,16 +202,6 @@ function play() {
 	document.getElementById('p2').style.webkitAnimationDelay=duration/2 + 's';
 	playAnimation(document.getElementById('p1'));
 	playAnimation(document.getElementById('p2'));
-}
-
-function togglePause() {
-	if (document.getElementById('p1').style.webkitAnimationPlayState=='paused') {
-		document.getElementById('p1').style.webkitAnimationPlayState='running';
-		document.getElementById('p2').style.webkitAnimationPlayState='running';
-	} else {
-		document.getElementById('p1').style.webkitAnimationPlayState='paused';
-		document.getElementById('p2').style.webkitAnimationPlayState='paused';	
-	}
 }
 
 function stop() {

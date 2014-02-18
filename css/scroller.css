@@ -1,5 +1,6 @@
 /*
 	This is the CSS for the scroll template by sublan.tv
+	For a usage discription see the scroller.html
 */
 
 *{
@@ -21,7 +22,7 @@ HTML, BODY {
 
 BODY {
 	Font-Family: Calibri,Arial;
-			Color: #FFF;
+	Color: #FFF;
 }
 
 #log {
