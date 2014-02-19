@@ -35,6 +35,11 @@
 		call 1-1 invoke "setAnimation('ScrollLeft');"
 		call 1-1 invoke "setAnimation('ScrollRight');"
 	
+	The speed can be set by:
+		call 1-1 invoke "setDuration(10);"
+	which sets the duration of one page's animation to 10s.
+	Please give the time always in seconds on without any suffix like 's'.
+	
 	You can pause/unpause the scroll by
 		call 1-1 invoke "togglePause();"
 	which will stop the movement immediately.
