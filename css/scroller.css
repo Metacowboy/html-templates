@@ -11,8 +11,6 @@
 }
 
 HTML, BODY {
-	Width:720px;
-	Height:576px;
 	Margin:0;										 /* Use all available space */
 	Padding:0;										 /* Use all available space */
 	Background:transparent;							 /* The HTML consumer actually makes your background transparent by default, unless a color or image is specified - but this might be usefull when debugging in browsers */
@@ -33,38 +31,33 @@ BODY {
 #ruler { 
 	visibility:hidden;
 	white-space: pre;
-	Font-Size:40px;
+	Font-Size:60px;
 	Margin: 0;
 	Text-Align: center;
-	Text-Shadow: 1px 1px 0px #000000;
-}
-
-#rulerObj {
-	white-space: nowrap;
-	Font-Size:40px;
-	Margin: 0;
-	Text-Align: left;
-	Text-Shadow: 1px 1px 0px #000000;
+	Text-Shadow: 2px 2px 0px #000000;
 }
 
 #scroller {
 	Width: 100%;
-	Height: 50px;
+	Height: 100px;
+	line-height: 100px;
 	Overflow: hidden;
 	Position: absolute;
 	Text-Align: center;
-	Top: 80%;
+	vertical-align: middle;
+	margin: 0;
+	Bottom: 5%;
 }
 
 #scroller p {
-	Font-Size:40px;
+	Font-Size:60px;
 	Position: absolute;
 	Width: 100%;
 	Height: 100%;
 	Margin: 0;
 	white-space: pre;
 	text-align: inherit;
-	Text-Shadow: 1px 1px 0px #000000;
+	Text-Shadow: 2px 2px 0px #000000;
 	-webkit-transform:translateX(100%);
 }
 

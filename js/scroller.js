@@ -1,20 +1,29 @@
 /*
 This is the js code base for the scroll template by sublan.tv.
-For a usage discription see the scroller.html
+For a usage description see the scroller.html
 
 In this file, you can only change the animation duration. 
 This musst be a even number and is in seconds.
 */
 
+/* USER Variables. Change the visual appearance in here */
+var duration = 10; // keep this value even (duration mod 2 = 0)
+var font = 'Calibri, Arial'; // The text font
+var fontSize = '60px'; // the font size 
+var color = '#FF00FF'; // the font color
+var scrollerHeight = '100px'; // the height of the scroller box. Important for Page Animations with Top/Bottom direction
 
-/* global vars */
+/* global vars - please don't edit here! */
 var scrollerText = [''];
 var scrollerIndex = 0;
 var active = false;
-var duration = 10; // keep this value even (duration mod 2 = 0)
 var animation = 'ScrollLeft';
 var animations = 'ScrollLeft RightInRightOut RightInLeftOut';
 var isScroll = /^Scroll/;
+var rulerObj; // = document.getElementById('ruler');
+var p1; //= document.getElementById('p1');
+var p2; //= document.getElementById('p2');
+var scroller; //= document.getElementById('scroller');
 
 var testText = 'CasparCG 2.0.7Beta has a brand new HTML Producer! This is so amazing! And guess what? This is a scroll template for you. Have fun using it! By sublan.tv';
 var testPages = ['1: CasparCG 2.0.7Beta has a', '2: brand new HTML Producer!', '3: This is so amazing!', '4: And guess what?', '5: This is a scroll template for you.','6: Have fun using it!','7: By sublan.tv'];
@@ -40,6 +49,28 @@ function scrollStopped() {
 	}
 }
 
+function init() {
+	// Init global objects 
+	rulerObj = document.getElementById('ruler');
+	p1 = document.getElementById('p1');
+	p2 = document.getElementById('p2');
+	scroller = document.getElementById('scroller');
+	
+	// Init look
+	scroller.style.fontFamily=font;
+	scroller.style.fontSize=fontSize;
+	scroller.style.color=color;
+	scroller.style.height=scrollerHeight;
+	scroller.style.lineHeight=scroller.offsetHeight+'px';
+	rulerObj.style.fontFamily=font;
+	rulerObj.style.fontSize=fontSize;
+	rulerObj.style.color=color;
+	rulerObj.style.height=scrollerHeight;
+	rulerObj.style.lineHeight=rulerObj.offsetHeight+'px';
+	
+	testScroll();
+}
+
 /* 
 SETTER 
 ======
@@ -49,8 +80,7 @@ function setNextPageText(obj) {
 	if (scrollerText.length > 0) {
 		if (scrollerIndex > scrollerText.length-1) {
 			scrollerIndex = 0;
-		}
-		var rulerObj = document.getElementById('ruler');		
+		}	
 		rulerObj.innerHTML=scrollerText[scrollerIndex];
 		obj.innerHTML=scrollerText[scrollerIndex];
 		
@@ -111,8 +141,7 @@ function setScrollText(text) {
 	var	page = 0;
 	var lastWidth = 0;
 	var newPages = [];
-	var rulerObj = document.getElementById('ruler');
-
+	
 	while(end < text.length) {
 		rulerObj.innerHTML = escapeHtml(text.substring(start,end));
 		lastWidth = rulerObj.offsetWidth;
@@ -157,11 +186,29 @@ function setObjectAnimation(anim, obj) {
 
 function setAnimation(anim) {
 	//document.getElementById('log').innerHTML='setAnimation()';
-	animation=anim;
 	if (active) {
 		stop();
+		animation=anim;
 		play();
+	} else {
+		animation=anim;
 	}
+}
+
+function setFontSize(size) {
+	fontSize = size;
+}
+
+function setFont(name) {
+	font=name;
+}
+
+function setColor(textColor) {
+	color=textColor;
+}
+
+function setScrollerHeight(sSize) {
+	scrollerHeight = sSize;
 }
 
 /*
@@ -170,7 +217,7 @@ Actions
 */
 function playAnimation(obj) {
 	//document.getElementById('log').innerHTML='playObjectAnimation()';
-	obj.offsetWidth = document.getElementById('p1').offsetWidth;
+	obj.offsetWidth = obj.offsetWidth;
 	setNextPageText(obj);
 	obj.addEventListener('webkitAnimationEnd',scrollStopped,false);
 	obj.style.webkitAnimationIterationCount=1;
@@ -180,12 +227,12 @@ function playAnimation(obj) {
 }
 
 function togglePause() {
-	if (document.getElementById('p1').style.webkitAnimationPlayState=='paused') {
-		document.getElementById('p1').style.webkitAnimationPlayState='running';
-		document.getElementById('p2').style.webkitAnimationPlayState='running';
+	if (p1.style.webkitAnimationPlayState=='paused') {
+		p1.style.webkitAnimationPlayState='running';
+		p2.style.webkitAnimationPlayState='running';
 	} else {
-		document.getElementById('p1').style.webkitAnimationPlayState='paused';
-		document.getElementById('p2').style.webkitAnimationPlayState='paused';	
+		p1.style.webkitAnimationPlayState='paused';
+		p2.style.webkitAnimationPlayState='paused';	
 	}
 }
 
@@ -199,15 +246,28 @@ function play() {
 	active=true;
 	
 	// This line is just to make sure the animation really starts if it has been played by changing the object
-	document.getElementById('p1').offsetWidth = document.getElementById('p1').offsetWidth;
-	document.getElementById('p2').offsetWidth = document.getElementById('p2').offsetWidth;
+	p1.offsetWidth = p1.offsetWidth;
+	p2.offsetWidth = p2.offsetWidth;
+	
+	
+	// customize the look
+	scroller.style.fontFamily=font;
+	scroller.style.fontSize=fontSize;
+	scroller.style.color=color;
+	scroller.style.height=scrollerHeight;
+	scroller.style.lineHeight=scroller.offsetHeight+'px';
+	rulerObj.style.fontFamily=font;
+	rulerObj.style.fontSize=fontSize;
+	rulerObj.style.color=color;
+	rulerObj.style.height=scrollerHeight;
+	rulerObj.style.lineHeight=rulerObj.offsetHeight+'px';
 	
 	// Reset duration and delay of second page
-	document.getElementById('p1').style.webkitAnimationDuration=duration+'s';
-	document.getElementById('p2').style.webkitAnimationDuration=duration+'s';
-	document.getElementById('p2').style.webkitAnimationDelay=duration/2 + 's';
-	playAnimation(document.getElementById('p1'));
-	playAnimation(document.getElementById('p2'));
+	p1.style.webkitAnimationDuration=duration+'s';
+	p2.style.webkitAnimationDuration=duration+'s';
+	p2.style.webkitAnimationDelay=duration/2 + 's';
+	playAnimation(p1);
+	playAnimation(p2);
 }
 
 function stop() {
