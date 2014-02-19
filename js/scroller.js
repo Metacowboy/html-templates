@@ -211,6 +211,10 @@ function setScrollerHeight(sSize) {
 	scrollerHeight = sSize;
 }
 
+function setDuration(dur) {
+	duration = dur;
+}
+
 /*
 Actions
 =======
