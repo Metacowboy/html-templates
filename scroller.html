@@ -52,6 +52,23 @@
 		call 1-1 invoke "testPage();"
 	with predefined animation and Text to show how it works.
 	
+	To change the visual appearance of the template, you can set
+	FONT:
+		call 1-1 invoke "setFont('FontName');"
+	FONT-SIZE:
+		call 1-1 invoke "setFontSize('50px');"
+	FONT-COLOR:
+		call 1-1 invoke "setColor('#ffffff');"
+	SCROLLER-HEIGT:
+		call 1-1 invoke "setScrollerHeight('100px');"
+		call 1-1 invoke "setScrollerHeight('50%');"
+	Setting ScrollerHeigt will have influence on where the text will be shown and how the animation will look like.
+	If you have an animation with Top/Bottom movement, the text will only be shown inside the scrollerHeight.
+	Check the positioning of the scroller object in css/scroller.css too.
+	Per Default, the bottom margin is 5% of the lower window border.
+	So setting the size to 100% will end in a overflow at top.
+	Keep this in mind when changing the height.
+	
 	Have fun!
 -->
 <!DOCTYPE html>
