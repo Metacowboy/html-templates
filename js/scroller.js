@@ -10,7 +10,7 @@ This musst be a even number and is in seconds.
 var duration = 10; // keep this value even (duration mod 2 = 0)
 var font = 'Calibri, Arial'; // The text font
 var fontSize = '60px'; // the font size 
-var color = '#FF00FF'; // the font color
+var color = '#FFFFFF'; // the font color
 var scrollerHeight = '100px'; // the height of the scroller box. Important for Page Animations with Top/Bottom direction
 
 /* global vars - please don't edit here! */
