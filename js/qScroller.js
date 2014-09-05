@@ -7,54 +7,53 @@ This musst be a even number and is in seconds.
 */
 
 /* USER Variables. Change the visual appearance in here */
-var duration = 10; // keep this value even (duration mod 2 = 0)
+var duration = 14; // keep this value even (duration mod 2 = 0)
 var font = 'Calibri, Arial'; // The text font
-var fontSize = '60px'; // the font size 
+var fontSize = '40px'; // the font size 
 var color = '#FFFFFF'; // the font color
 var scrollerHeight = '100px'; // the height of the scroller box. Important for Page Animations with Top/Bottom direction
 
 /* global vars - please don't edit here! */
-var scrollerText = [''];
-var scrollerIndex = 0;
+var messageQueue; // = new MessageQueue();
 var active = false;
 var animation = 'ScrollLeft';
-var animations = 'ScrollLeft RightInRightOut RightInLeftOut';
 var isScroll = /^Scroll/;
 var rulerObj; // = document.getElementById('ruler');
-var p1; //= document.getElementById('p1');
-var p2; //= document.getElementById('p2');
-var scroller; //= document.getElementById('scroller');
+var p1; // = document.getElementById('p1');
+var p2; // = document.getElementById('p2');
+var scroller; // = document.getElementById('scroller');
+var log;
 
-var testText = 'CasparCG 2.0.7Beta has a brand new HTML Producer! This is so amazing! And guess what? This is a scroll template for you. Have fun using it! By sublan.tv';
-var testPages = ['1: CasparCG 2.0.7Beta has a', '2: brand new HTML Producer!', '3: This is so amazing!', '4: And guess what?', '5: This is a scroll template for you.','6: Have fun using it!','7: By sublan.tv'];
+var testText = 'This is the test scroll for the brand new scroller template by sublan.tv - We hope you enjoy this template and find it to be usefull.';
+var testPages = ['1. Wow - This is a short test page', '2. But this one is realy, realy looooooonnnnnnngggggggggg. Let\'s see whether it fits onto the page or, if not, the fittinng algo works correctly and splitts it over multiple pages instead of let it overlap or run out of the screen.','3. This one is short again. Yeah ;-)'];
 
 /* 
 EVENT HANDLER 
 =============
 */
 function scrollStopped() {
-	//document.getElementById('log').innerHTML='scrollStopped()';
-
 	// reset animation
 	event.target.style.webkitAnimationPlayState='paused';
 	event.target.style.webkitAnimationDelay=0; // the delay is only needed at the first start of an animation!
 	if (active) {
 		// play again
 		playAnimation(event.target);
-	} else if (isScroll.test(animation)) {
-		// It's a scroller, we need to end the whole text
-		if (scrollerIndex < scrollerText.length) {
-			playAnimation(event.target);
-		}
+	} else if (messageQueue.currentMessage() && messageQueue.currentMessage().hasNext()) {
+		// The message is not played complete, we have to complete it
+		playAnimation(event.target);
 	}
 }
 
 function init() {
 	// Init global objects 
+	//document.getElementById('log').innerHTML='init()';
+	
+	messageQueue = new MessageQueue();
 	rulerObj = document.getElementById('ruler');
 	p1 = document.getElementById('p1');
 	p2 = document.getElementById('p2');
 	scroller = document.getElementById('scroller');
+	log = document.getElementById('log');
 	
 	// Init look
 	scroller.style.fontFamily=font;
@@ -68,7 +67,8 @@ function init() {
 	rulerObj.style.height=scrollerHeight;
 	rulerObj.style.lineHeight=rulerObj.offsetHeight+'px';
 	
-	testPage();
+	//testScroll();
+	//testPage();
 }
 
 /* 
@@ -76,27 +76,24 @@ SETTER
 ======
 */
 function setNextPageText(obj) {
-
-	if (scrollerText.length > 0) {
-		if (scrollerIndex > scrollerText.length-1) {
-			scrollerIndex = 0;
-		}	
-		rulerObj.innerHTML=scrollerText[scrollerIndex];
-		obj.innerHTML=scrollerText[scrollerIndex];
+	if (!messageQueue.isEmpty()) {
+		var page = messageQueue.nextPage();
+		rulerObj.innerHTML=page.text;
+		obj.innerHTML=page.text;
 		
 		// Adjust spacing to make sure the text fills the whole page. Not for the last page and only with Scroll* Animations
 		obj.style.letterSpacing = 'normal';
 		obj.style.wordSpacing = 'normal';
 		rulerObj.style.letterSpacing = 'normal';
 		rulerObj.style.wordSpacing = 'normal';
-		
-		if ( isScroll.test(animation) && scrollerIndex != scrollerText.length-1) { 
+
+		if ( isScroll.test(animation) && !page.noStretch) { 
 			var diff = window.innerWidth - rulerObj.offsetWidth;
 			
 			// if there are more chars than missing pixels, we can use letter-spacing
-			if (diff > scrollerText[scrollerIndex].length-1) {
-				rulerObj.style.letterSpacing=Math.ceil(diff/(scrollerText[scrollerIndex]-1)) + 'px';
-				obj.style.letterSpacing=Math.ceil(diff/(scrollerText[scrollerIndex]-1)) + 'px';
+			if (diff > page.text.length-1) {
+				rulerObj.style.letterSpacing=Math.ceil(diff/(page.text.length-1)) + 'px';
+				obj.style.letterSpacing=Math.ceil(diff/(page.text.length-1)) + 'px';
 				diff = window.innerWidth - rulerObj.offsetWidth;
 			
 			}
@@ -122,49 +119,122 @@ function setNextPageText(obj) {
 				rulerObj.style.wordSpacing = 'normal';
 			}
 		}
-		scrollerIndex++;
 	}
 }
 
+// set the pages to show without check fittings and overwrite whats on now
 function setPages(pages) {
-	//document.getElementById('log').innerHTML='setPages()';
+	messageQueue.clear(true);
+	messages = [];
 	if (pages !== null) {
-		scrollerText = pages;
-		scollerIndex = 0;
+		for (page in pages) {
+			messages.push(new Message(new Page(escapeHtml(pages[page]), true)));
+		}
+	}
+	messageQueue.update(messages,true);
+} 
+
+// set the pages to show and check fitting and overwrite whats on now
+function setFitted(pages) {
+	messageQueue.clear(true);
+	messages = [];
+	if (pages !== null) {
+		for (entry in pages) {
+			messages.push(fitTextToPages(pages[entry]));
+		}
+	}
+	messageQueue.update(messages,true);
+}
+
+// set the text to show and overwrite whats on now
+function setScrollText(text) {
+	messageQueue.clear(true);
+	// fit the text to as many pages as needed
+	messageQueue.addMessage(fitTextToPages(text));
+}
+
+// add the pages to that which are on that are ON without check fittings
+function addPages(pages) {
+	if (pages !== null) {
+		for (page in pages) {
+			messageQueue.addMessage(new Message(new Page(escapeHtml(pages[page]), true)));
+		}
 	}
 } 
 
-function setScrollText(text) {
-	//document.getElementById('log').innerHTML='setScrollText('+ text.length +')<br>'+text;
-	var start = 0;
-	var end = 0;
-	var	page = 0;
-	var lastWidth = 0;
-	var newPages = [];
-	
-	while(end < text.length) {
-		rulerObj.innerHTML = escapeHtml(text.substring(start,end));
-		lastWidth = rulerObj.offsetWidth;
-		while( lastWidth < window.innerWidth && end < text.length) {
-			rulerObj.innerHTML = escapeHtml(text.substring(start,++end));
-			lastWidth = rulerObj.offsetWidth;
+// add the pages to that which are ON and check fitting
+function addFitted(pages) {
+	if (pages !== null) {
+		for (entry in pages) {
+			messageQueue.addMessage(fitTextToPages(pages[entry]));
 		}
-		
-		// if we're not at the end, we need to take the one that fits
-		if (end < text.length) {
-			end--;
-		}
-		newPages[page++] = escapeHtml(text.substring(start,end));
-		start=end;
 	}
+}
 
-	if (page > 0) {	
-		scrollerText = newPages;
-	} else {
-		scrollerText = [''];
+// add the text to the one that is ON
+function addScrollText(text) {
+	// fit the text to as many pages as needed
+	messageQueue.addMessage(fitTextToPages(text));
+}
+
+// update the pages without check fitting so that the current cycle ends and this will show
+function updatePages(pages) {
+	messages = [];
+	if (pages !== null) {
+		for (page in pages) {
+			messages.push(new Message(new Page(escapeHtml(pages[page]), true)));
+		}
 	}
-	scrollerIndex = 0;
-	
+	messageQueue.update(messages);
+} 
+
+// update the pages and check fitting so that the current cycle ends and this will show
+function updateFitted(pages) {
+	messages = [];
+	if (pages !== null) {
+		for (entry in pages) {
+			messages.push(fitTextToPages(pages[entry]));
+		}
+	}
+	messageQueue.update(messages);
+}
+
+// update the text so that the current cycle ends and this will show
+function updateScrollText(text) {
+	// fit the text to as many pages as needed
+	messageQueue.update([fitTextToPages(text)]);
+}
+
+// spreads the given text over a number of pages needed to show the text on screen and 
+// return a new message.
+function fitTextToPages(text) {
+	if (text && text.length > 0) {
+		var start = 0;
+		var end = 0;
+		var lastWidth = 0;
+		var newPages = [];
+		
+		while(end < text.length) {
+			rulerObj.innerHTML = escapeHtml(text.substring(start,end));
+			lastWidth = rulerObj.offsetWidth;
+			while( lastWidth < p1.offsetWidth && end < text.length) {
+				rulerObj.innerHTML = escapeHtml(text.substring(start,++end));
+				lastWidth = rulerObj.offsetWidth;
+			}
+			// if we're not at the end, we need to take the one that fits
+			if (end < text.length) {
+				end--;
+			}
+			newPages.push(new Page(escapeHtml(text.substring(start,end))));
+			start=end;
+		}
+		if (newPages.length > 0) {
+			// set noStretch at the last page as it can be much smaller and should not be stretched.
+			newPages[newPages.length-1].noStretch = true;
+			return new Message(newPages);
+		}
+	}
+	return new Message();
 }
 
 function setObjectAnimation(anim, obj) {
@@ -185,7 +255,6 @@ function setObjectAnimation(anim, obj) {
 }
 
 function setAnimation(anim) {
-	//document.getElementById('log').innerHTML='setAnimation()';
 	if (active) {
 		stop();
 		animation=anim;
@@ -196,23 +265,51 @@ function setAnimation(anim) {
 }
 
 function setFontSize(size) {
+	reset();
 	fontSize = size;
+	setLook();
 }
 
 function setFont(name) {
+	reset();
 	font=name;
+	setLook();
 }
 
 function setColor(textColor) {
 	color=textColor;
+	setLook();
 }
 
 function setScrollerHeight(sSize) {
 	scrollerHeight = sSize;
+	setLook();
 }
 
 function setDuration(dur) {
 	duration = dur;
+}
+
+function setLook() {
+	// customize the look
+	scroller.style.fontFamily=font;
+	scroller.style.fontSize=fontSize;
+	scroller.style.color=color;
+	scroller.style.height=scrollerHeight;
+	scroller.style.lineHeight=scroller.offsetHeight+'px';
+	rulerObj.style.fontFamily=font;
+	rulerObj.style.fontSize=fontSize;
+	rulerObj.style.color=color;
+	rulerObj.style.height=scrollerHeight;
+	rulerObj.style.lineHeight=rulerObj.offsetHeight+'px';
+}
+
+function reset() {
+	stop();
+	messageQueue.clear(true);
+	p1.innerHTML='';
+	p2.innerHTML='';
+	log.innerHTML='';
 }
 
 /*
@@ -220,7 +317,6 @@ Actions
 =======
 */
 function playAnimation(obj) {
-	//document.getElementById('log').innerHTML='playObjectAnimation()';
 	obj.offsetWidth = obj.offsetWidth;
 	setNextPageText(obj);
 	obj.addEventListener('webkitAnimationEnd',scrollStopped,false);
@@ -228,6 +324,7 @@ function playAnimation(obj) {
 	setObjectAnimation(animation,obj);
 	obj.style.webkitAnimationPlayState='running';
 	obj.style.visibility='visible';
+	//$(obj).show();
 }
 
 function togglePause() {
@@ -245,56 +342,54 @@ CasparCG standard functions
 ===========================
 */
 function play() {
-	//document.getElementById('log').innerHTML='play()';
 	stop();
-	active=true;
 	
 	// This line is just to make sure the animation really starts if it has been played by changing the object
 	p1.offsetWidth = p1.offsetWidth;
 	p2.offsetWidth = p2.offsetWidth;
 	
-	
-	// customize the look
-	scroller.style.fontFamily=font;
-	scroller.style.fontSize=fontSize;
-	scroller.style.color=color;
-	scroller.style.height=scrollerHeight;
-	scroller.style.lineHeight=scroller.offsetHeight+'px';
-	rulerObj.style.fontFamily=font;
-	rulerObj.style.fontSize=fontSize;
-	rulerObj.style.color=color;
-	rulerObj.style.height=scrollerHeight;
-	rulerObj.style.lineHeight=rulerObj.offsetHeight+'px';
-	
-	// Reset duration and delay of second page
+	//$('#totalbg').show();
+	//$('#textbg').fadeIn();
+	//$('#textview').fadeIn();
+
+	p1.offsetWidth = p1.offsetWidth;
+	p2.offsetWidth = p2.offsetWidth;
 	p1.style.webkitAnimationDuration=duration+'s';
 	p2.style.webkitAnimationDuration=duration+'s';
 	p2.style.webkitAnimationDelay=duration/2 + 's';
+	
+	active=true;
+
 	playAnimation(p1);
 	playAnimation(p2);
 }
 
 function stop() {
 	active=false;
+	
 	// reset animation
+	//$('#totalbg').fadeOut();
+	//$('#textbg').fadeOut();
+	//$('#textview').fadeOut();
 	document.getElementById('p1').style.webkitAnimationIterationCount=0;
 	document.getElementById('p1').webkitAnimationPlayState='paused';
 	document.getElementById('p1').style.visibility='hidden';
+	//$('#p1').fadeOut();
 	document.getElementById('p1').style.webkitAnimationName='';
 	document.getElementById('p2').style.webkitAnimationIterationCount=0;
 	document.getElementById('p2').webkitAnimationPlayState='paused';
 	document.getElementById('p2').style.visibility='hidden';
+	//$('#p2').fadeOut();
 	document.getElementById('p2').style.webkitAnimationName='';
+	
 }
 
 function next() {
-	// Will stop after finishing the active animation
 	active=false;
 }
 
 function update(str) {
-	//document.getElementById('log').innerHTML='update()';
-	setScrollText(str);
+	updateScrollText(str);
 }
 
 function invoke(str) {
@@ -314,7 +409,8 @@ function testScroll() {
 
 function testPage() {
 	stop();
-	setPages(testPages);
+	//setPages(testPages);
+	setFitted(testPages);
 	setAnimation('TopInBottomOut');
 	play();
 }

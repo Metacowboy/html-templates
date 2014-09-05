@@ -1,0 +1,111 @@
+<!-- 
+     Template for HTML based graphics in CasparCG Server with Berkelium.
+	 Based on the Example from hreinnbeck at https://github.com/hreinnbeck/caspar-templates.
+	 
+	 Contrary to the recomendations for running Flash based graphics
+	 turning on 'ClearType' will result in better font-aliasing for
+	 HTML based templates.
+	 
+	 
+	This Template provides a typical text-scroller.
+	Per default, the scroll is not started after load.
+	To start it, use ACMP like this
+		call 1-1 play
+	Where the template has been loaded on channel 1 layer 1.
+	
+	To set the text, use:
+		call 1-1 update "Your text here"
+	or (prefered)
+		call 1-1 invoke "setScrollText('Your text here');"
+	
+	This scroller can be used in two ways. You can scroll a long running text (which is default and used like explained above) 
+	or you can slide through different pages of text.
+	To use the page wise scrolling, set your pages like this:
+		call 1-1 invoke "setPages(['Page 1 content','Page 2 content', ... ,'Page n content']);"
+	You can use:
+		call 1-1 invoke "setFitted(['Page 1 content','Page 2 content', ... ,'Page n content']);"
+	to let the template check if the pages will fit the screen and if no, split it over more pages.
+	This will not respect wordwrapping and may not be the best solution, but will work fine with the scroller animations.
+	
+	There are also updateScrollText/Pages/Fitted functions which will update the text content.
+	The animation will end its current cycle before the new values will be shown.
+	
+	If you want to add pages or text, you can use the addScrollText/Pages/Fitted functions
+	which will add the given content at the end of the current cycle.
+		call 1-1 invoke "updatePages(['Page 1 updated','Page 2 updated', ... ,'Some pages may be deleted']);"
+		call 1-1 invoke "addPages(['Page 10 content','Page 11 content']);"
+	
+	
+	If you want your pages to be shown like in a slide show instead of continuously moving, use:
+		call 1-1 invoke "setAnimation('RightInLeftOut');"
+		call 1-1 invoke "setAnimation('LeftInLeftOut');"
+		call 1-1 invoke "setAnimation('RightInRightOut');"
+		call 1-1 invoke "setAnimation('LeftInRightOut');"
+		call 1-1 invoke "setAnimation('BottomInTopOut');"
+		call 1-1 invoke "setAnimation('BottomInBottomOut');"
+		call 1-1 invoke "setAnimation('TopInTopOut');"
+		call 1-1 invoke "setAnimation('TopInBottomOut');"
+	
+	To set the typical scroll use:
+		call 1-1 invoke "setAnimation('ScrollLeft');"
+		call 1-1 invoke "setAnimation('ScrollRight');"
+	
+	The speed can be set by:
+		call 1-1 invoke "setDuration(10);"
+	which sets the duration of one page's animation to 10s.
+	Please give the time always in seconds on without any suffix like 's'.
+	
+	You can pause/unpause the scroll by
+		call 1-1 invoke "togglePause();"
+	which will stop the movement immediately.
+	
+	To stop the scroll, use 
+		call 1-1 stop
+	which will stop the scroll and clears of the screen.
+	
+	If you want to stop the scroll after the end of the current iteration, call
+		call 1-1 next
+	This will end the whole scrolltext if in scrollmode or end after the current page in page mode.
+	
+	There are two test functions for you
+		call 1-1 invoke "testScroll();"
+		call 1-1 invoke "testPage();"
+	with predefined animation and Text to show how it works.
+	
+	To change the visual appearance of the template, you can set
+	FONT (will stop and clear data):
+		call 1-1 invoke "setFont('FontName');"
+	FONT-SIZE (will stop and clear data):
+		call 1-1 invoke "setFontSize('50px');"
+	FONT-COLOR:
+		call 1-1 invoke "setColor('#ffffff');"
+	SCROLLER-HEIGT:
+		call 1-1 invoke "setScrollerHeight('100px');"
+		call 1-1 invoke "setScrollerHeight('50%');"
+	Setting ScrollerHeigt will have influence on where the text will be shown and how the animation will look like.
+	If you have an animation with Top/Bottom movement, the text will only be shown inside the scrollerHeight.
+	Check the positioning of the scroller object in css/scroller.css too.
+	Per Default, the bottom margin is 5% of the lower window border.
+	So setting the size to 100% will end in a overflow at top.
+	Keep this in mind when changing the height.
+	
+	Have fun!
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>HTML-Scroll for CasparCG by Sublan.tv</title>		
+		<link rel="stylesheet" type="text/css" href="css/scroller.css">
+		<script src="js/MessageQueue.js"></script>
+		<script src="js/qScroller.js"></script>
+    </head>
+    <body onload="init();">
+		<span id="ruler"></span>
+		<p id="log"></p>
+		<div id='scroller'>
+			<p id="p1"></p>
+			<p id="p2"></p>
+		</div>
+    </body>
+</html>
